@@ -34,7 +34,7 @@ class CoralOrdinalLoss(tf.keras.losses.Loss):
     return ordinal_loss(y_pred, tf_levels, self.importance_weights)
 
 
-ordinal_loss(logits, levels, imp):
+def ordinal_loss(logits, levels, imp):
     levels = tf.cast(levels, tf.float32)
     val = (-tf.reduce_sum((tf.math.log_sigmoid(logits)*levels
                       + (tf.math.log_sigmoid(logits) - logits)*(1-levels))*imp,

@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
-class CoralOrdinal(tensorflow.keras.layers.Layer):
+class CoralOrdinal(tf.keras.layers.Layer):
 
   # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
   # in case the user doesn't know the input dimensions when defining the model.
