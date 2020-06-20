@@ -1,8 +1,19 @@
 from setuptools import setup
+import os
+import sys
+
+_here = os.path.abspath(os.path.dirname(__file__))
+
+version = {}
+with open(os.path.join(_here, 'coral_ordinal', 'version.py')) as f:
+    exec(f.read(), version)
+    
+    
+with open(os.path.join(_here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
-    # Needed to silence warnings (and to be a worthwhile package)
-    name = 'CORAL Ordinal',
+    name = 'coral_ordinal',
     url = 'https://github.com/ck37/coral_ordinal',
     author = 'Chris Kennedy',
     author_email = 'chrisken@gmail.com',
@@ -10,11 +21,9 @@ setup(
     packages = ['coral_ordinal'],
     # Needed for dependencies
     install_requires = ['numpy', 'pandas', 'tensorflow', 'scipy'],
-    # *strongly* suggested for sharing
-    version = '0.1',
+    version = version['__version__'],
     # The license can be anything you like
     license = 'MIT',
     description = 'TF.Keras implementation of CORAL ordinal classification output layer',
-    # We will also need a readme eventually (there will be a warning)
-    # long_description=open('README.txt').read(),
+    long_description = long_description
 )
