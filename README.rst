@@ -1,7 +1,7 @@
 CORAL ordinal classification in tf.keras
 ****************************************
 
-TF.Keras implementation of ordinal classification using CORAL by Cao et al. (2019) with thanks to Sebastian Ruder for the help.
+TF.Keras implementation of ordinal classification using CORAL by Cao et al. (2019) with thanks to Sebastian Raschka for the help.
 
 This is a work in progress, so please post any issues to the issues queue.
 
