@@ -13,4 +13,4 @@ See `colab notebook <https://colab.research.google.com/drive/1-jkKxUOrXBya_dDkWQ
 References
 ##########
 
-Cao, W., Mirjalili, V., & Raschka, S. (2019). [Consistent rank logits for ordinal regression with convolutional neural networks](https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6.
+Cao, W., Mirjalili, V., & Raschka, S. (2019). `Consistent rank logits for ordinal regression with convolutional neural networks <https://arxiv.org/abs/1901.07884>`_. arXiv preprint arXiv:1901.07884, 6.
