@@ -7,6 +7,13 @@ This is a work in progress, so please post any issues to the [issue queue](https
 
 [Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation. Docs and tests will eventually be added.
 
+Key pending items:
+
+  * Function docstrings
+  * Docs
+  * Tests
+  * Custom metrics: accuracy, cross-entropy
+
 ## Installation
 
 Install the stable version via pip:
