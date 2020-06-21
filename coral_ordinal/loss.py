@@ -4,14 +4,15 @@ import tensorflow.python.ops as ops
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
 class CoralOrdinalLoss(tf.keras.losses.Loss):
+  
   def __init__(self, num_classes, importance = None, name = "coral_ordinal_loss", **kwargs):
     super().__init__(name = name, **kwargs)
     self.num_classes = num_classes
     
     if importance is None:
-      self.importance_weights = tf.ones(num_classes - 1, dtype = tf.float32)
-    else:
-      self.importance_weights = importance
+      importance = tf.ones(num_classes - 1, dtype = tf.float32)
+      
+    self.importance_weights = importance
 
   @tf.function
   def label_to_levels(self, label):
