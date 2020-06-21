@@ -12,7 +12,7 @@ This is a work in progress, so please post any issues to the [issue queue](https
 Install the stable version via pip:
 
 ```bash
-pip install coral_ordinal
+pip install coral-ordinal
 ```
 
 Install the most recent code on GitHub via pip:
