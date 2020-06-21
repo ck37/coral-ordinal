@@ -1,7 +1,7 @@
 # CORAL ordinal classification in tf.keras
 
 
-Tensorflow Keras implementation of ordinal classification using CORAL by Cao et al. (2019), with thanks to Sebastian Raschka for the help in porting from PyTorch. This package includes an ordinal output layer and an associated loss function.
+Tensorflow Keras implementation of ordinal classification using CORAL by Cao et al. (2019), with thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from PyTorch. This package includes an ordinal output layer and an associated loss function.
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
