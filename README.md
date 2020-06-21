@@ -1,11 +1,11 @@
 # CORAL ordinal classification in tf.keras
 
 
-TF.Keras implementation of ordinal classification using CORAL by Cao et al. (2019) with thanks to Sebastian Raschka for the help.
+TF.Keras implementation of ordinal classification using CORAL by Cao et al. (2019), with thanks to Sebastian Raschka for the help in porting from PyTorch.
 
 This is a work in progress, so please post any issues to the issues queue.
 
-See [colab notebook](https://colab.research.google.com/drive/1-jkKxUOrXBya_dDkWQN6qgI-R5B3Q2AQ) for an extended example.
+See [colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for an example of using an ordinal output layer with MNIST.
 
 [Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
 
