@@ -5,7 +5,7 @@ Tensorflow Keras implementation of ordinal classification using CORAL by Cao et 
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
-[Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
+[Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation. Docs and tests will eventually be added.
 
 ## Installation
 
