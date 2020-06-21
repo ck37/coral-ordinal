@@ -23,7 +23,7 @@ pip install git+https://github.com/ck37/coral-ordinal/
 
 ## Dependencies
 
-This package relies on Python 3.6+, Tensorflow 2, numpy, pandas, and scipy.
+This package relies on Python 3.6+, Tensorflow 2.2+, numpy, pandas, and scipy.
 
 ## Example
 
