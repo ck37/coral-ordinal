@@ -7,7 +7,7 @@ This is a work in progress, so please post any issues to the [issue queue](https
 
 [Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
 
-## Install
+## Installation
 
 Install via pip:
 
