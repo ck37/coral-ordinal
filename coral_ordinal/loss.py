@@ -9,7 +9,7 @@ class CoralOrdinalLoss(tf.keras.losses.Loss):
     self.num_classes = num_classes
     
     if importance is None:
-      self.importance = tf.ones(num_classes - 1, dtype = tf.float32)
+      self.importance_weights = tf.ones(num_classes - 1, dtype = tf.float32)
     else:
       self.importance_weights = importance
 
