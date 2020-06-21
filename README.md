@@ -9,6 +9,14 @@ See [colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmg
 
 [Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
 
+## Install
+
+Install via pip:
+
+```bash
+pip install git+https://github.com/ck37/coral-ordinal/
+```
+
 
 ## References
 
