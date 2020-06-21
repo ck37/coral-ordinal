@@ -8,10 +8,8 @@ class CoralOrdinalLoss(tf.keras.losses.Loss):
   def __init__(self, num_classes, importance = None, name = "coral_ordinal_loss", **kwargs):
     super().__init__(name = name, **kwargs)
     self.num_classes = num_classes
-    
     if importance is None:
       importance = tf.ones(num_classes - 1, dtype = tf.float32)
-      
     self.importance_weights = importance
 
   @tf.function
