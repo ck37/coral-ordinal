@@ -14,13 +14,6 @@ Key pending items:
   * Tests
   * Custom metrics: accuracy, cross-entropy
 
-Key pending items:
-
-  * Function docstrings
-  * Docs
-  * Tests
-  * Custom metrics: accuracy, cross-entropy
-
 ## Installation
 
 Install the stable version via pip:
