@@ -9,7 +9,13 @@ This is a work in progress, so please post any issues to the [issue queue](https
 
 ## Installation
 
-Install via pip:
+Install the stable version via pip:
+
+```bash
+pip install coral_ordinal
+```
+
+Install the most recent code on GitHub via pip:
 
 ```bash
 pip install git+https://github.com/ck37/coral-ordinal/

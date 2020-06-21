@@ -14,7 +14,7 @@ with open(os.path.join(_here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name = 'coral-ordinal-ck37',
+    name = 'coral-ordinal',
     url = 'https://github.com/ck37/coral_ordinal',
     author = 'Chris Kennedy',
     author_email = 'chrisken@gmail.com',
