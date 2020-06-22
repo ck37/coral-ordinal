@@ -12,7 +12,7 @@ Key pending items:
   * Function docstrings
   * Docs
   * Tests
-  * Custom metrics: accuracy, cross-entropy
+  * Custom metrics: accuracy, cross-entropy, mean absolute error of labels
 
 ## Installation
 
