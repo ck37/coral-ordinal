@@ -15,7 +15,7 @@ with open(os.path.join(_here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name = 'coral-ordinal',
-    url = 'https://github.com/ck37/coral_ordinal',
+    url = 'https://github.com/ck37/coral-ordinal',
     author = 'Chris Kennedy',
     author_email = 'chrisken@gmail.com',
     packages = setuptools.find_packages(),
@@ -26,7 +26,7 @@ setup(
     version = version['__version__'],
     long_description_content_type = "text/markdown",
     license = 'MIT',
-    description = 'TF.Keras implementation of CORAL ordinal classification output layer',
+    description = 'Tensorflow Keras implementation of CORAL ordinal classification output layer',
     long_description = long_description,
     python_requires = '>=3.6',
 )
