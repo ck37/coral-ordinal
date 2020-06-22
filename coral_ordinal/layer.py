@@ -52,6 +52,6 @@ class CoralOrdinal(tf.keras.layers.Layer):
   # This allows for serialization supposedly.
   # https://www.tensorflow.org/guide/keras/custom_layers_and_models#you_can_optionally_enable_serialization_on_your_layers
   def get_config(self):
-    config = super(coral_ordinal, self).get_config()
+    config = super(CoralOrdinal, self).get_config()
     config.update({'num_classes': self.num_classes})
     return config
