@@ -42,7 +42,7 @@ This package relies on Python 3.6+, Tensorflow 2.2+, numpy, pandas, and scipy.
 
 ## Example
 
-See [this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for an example of using an ordinal output layer with MNIST.
+[See this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for examples of ordinal classification with MNIST (multilayer perceptron) and Amazon reviews (universal sentence encoder).
 
 ## References
 
