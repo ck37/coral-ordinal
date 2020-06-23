@@ -26,11 +26,11 @@ def ordinal_softmax(x, axis = -1):
   # Pr(y = k) = Pr(y > k) - Pr(y > k - 1)
   if num_classes > 2:
     for val in range(1, num_classes - 1):
-      probs.append(cum_probs[:, val - 1) - cum_probs[:, val])
+      probs.append(cum_probs[:, val - 1] - cum_probs[:, val])
       
       
   # Special handling of the maximum label value.
-  probs.append(cum_probs[:, num_classes - 2))
+  probs.append(cum_probs[:, num_classes - 2])
   
   # Column as columns into a new tensor.
   probs_tensor = tf.concat(probs, axis = 1)
