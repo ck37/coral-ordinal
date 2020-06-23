@@ -62,7 +62,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
       outputs = logits
     else:
       # Not yet tested:
-      outputs = self.activation(outputs)
+      outputs = self.activation(logits)
 
     return outputs
   
