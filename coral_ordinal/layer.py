@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
-from . import OrdinalCrossEntropy
+import OrdinalCrossEntropy
 
 class CoralOrdinal(tf.keras.layers.Layer):
 
