@@ -1,4 +1,4 @@
-# CORAL ordinal classification in tf.keras
+# Ordinal classification in Tensorflow Keras
 
 
 Tensorflow Keras implementation of ordinal classification using consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019).
