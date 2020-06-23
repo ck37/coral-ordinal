@@ -30,7 +30,7 @@ def ordinal_softmax(x, axis = -1):
       
       
   # Special handling of the maximum label value.
-  probs.append(cum_probs[:, num_classes - 2))
+  probs.append(cum_probs[:, num_classes - 2])
   
   # Column as columns into a new tensor.
   probs_tensor = tf.concat(probs, axis = 1)
