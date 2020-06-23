@@ -1,6 +1,7 @@
 import tensorflow as tf
+from tensorflow.python.util.tf_export import keras_export
 
-# x are logits that come out of model.predict()
+@keras_export('keras.activations.ordinal_softmax')
 def ordinal_softmax(x, axis = -1):
   """ Convert the ordinal logit output of CoralOrdinal() to label probabilities.
   

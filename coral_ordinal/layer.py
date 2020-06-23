@@ -2,6 +2,8 @@ import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
+from tensorflow.python.keras import activations
+
 from .loss import OrdinalCrossEntropy
 
 class CoralOrdinal(tf.keras.layers.Layer):
@@ -26,7 +28,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
     # Pass any additional keyword arguments to Layer() (i.e. name, dtype)
     super(CoralOrdinal, self).__init__(**kwargs)
     self.num_classes = num_classes
-    self.activation = activation
+    self.activation = activations.get(activation)
     
   # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
   def build(self, input_shape):
