@@ -1,4 +1,4 @@
-# MeanAbsoluteErrorLabels
+import tensorflow as tf
 
 def MeanAbsoluteErrorLabels(y_true, y_pred):
   # Assume that y_pred is cumulative logits from our CoralOrdinal layer.
