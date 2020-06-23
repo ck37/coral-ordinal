@@ -8,7 +8,15 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
   # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
   # in case the user doesn't know the input dimensions when defining the model.
-  def __init__(self, num_classes, importance = None, **kwargs):
+  def __init__(self, num_classes, activation = None, **kwargs):
+    """ Ordinal output layer, which produces ordinal logits by default.
+    
+    Args:
+      num_classes: how many ranks (aka labels or values) are in the ordinal variable.
+      activation: (Optional) Activation function to use. The default of None produces
+        ordinal logits, but passing "ordinal_softmax" will cause the layer to output
+        a probability prediction for each label.
+    """
     
     # Via Dense Layer code:
     # https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/layers/core.py#L1128
@@ -18,6 +26,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
     # Pass any additional keyword arguments to Layer() (i.e. name, dtype)
     super(CoralOrdinal, self).__init__(**kwargs)
     self.num_classes = num_classes
+    self.activation = activation
     
   # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
   def build(self, input_shape):
@@ -46,8 +55,14 @@ class CoralOrdinal(tf.keras.layers.Layer):
     fc_inputs = tf.matmul(inputs, self.fc)
 
     logits = fc_inputs + self.linear_1_bias
+    
+    if self.activation is None:
+      outputs = logits
+    else:
+      # Not yet tested:
+      outputs = self.activation(outputs)
 
-    return logits
+    return outputs
   
   # This allows for serialization supposedly.
   # https://www.tensorflow.org/guide/keras/custom_layers_and_models#you_can_optionally_enable_serialization_on_your_layers
