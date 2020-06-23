@@ -26,7 +26,7 @@ setup(
     version = version['__version__'],
     long_description_content_type = "text/markdown",
     license = 'MIT',
-    description = 'Tensorflow Keras implementation of CORAL ordinal classification output layer',
+    description = 'Tensorflow Keras implementation of CORAL ordinal classification output layer, loss, and metrics',
     long_description = long_description,
     python_requires = '>=3.6',
 )
