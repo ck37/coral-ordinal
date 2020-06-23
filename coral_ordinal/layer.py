@@ -43,8 +43,6 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
   # This defines the forward pass.
   def call(self, inputs):
-    # CK: running into an error here:
-    #fc_inputs = self.fc(inputs)
     fc_inputs = tf.matmul(inputs, self.fc)
 
     logits = fc_inputs + self.linear_1_bias
