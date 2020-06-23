@@ -7,7 +7,7 @@ This package includes:
 
   * Ordinal output layer: `CoralOrdinal()`
   * Ordinal loss function: `OrdinalCrossEntropy()`
-  * Ordinal accuracy metric: `MeanAbsoluteErrorLabels()`
+  * Ordinal error metric: `MeanAbsoluteErrorLabels()`
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
