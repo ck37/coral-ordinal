@@ -2,13 +2,11 @@ import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
-import OrdinalCrossEntropy
-
 class CoralOrdinal(tf.keras.layers.Layer):
 
   # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
   # in case the user doesn't know the input dimensions when defining the model.
-  def __init__(self, num_classes, add_loss = True, importance = None, **kwargs):
+  def __init__(self, num_classes, add_loss = False, importance = None, **kwargs):
     
     # Via Dense Layer code:
     # https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/layers/core.py#L1128
