@@ -8,13 +8,11 @@ This package includes:
   * Ordinal output layer: `CoralOrdinal()`
   * Ordinal loss function: `OrdinalCrossEntropy()`
   * Ordinal error metric: `MeanAbsoluteErrorLabels()`
-  * Conversion of cumulative logit predictions to probabilities: `logits_to_probs()`
+  * Ordinal activation function: `logits_to_probs()`
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
-[Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
-
-**Acknowledgments**: Many thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from PyTorch.
+**Acknowledgments**: Many thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from the [PyTorch source repository](https://github.com/Raschka-research-group/coral-cnn/).
 
 Key pending items:
 
