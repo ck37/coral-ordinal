@@ -1,11 +1,22 @@
 import tensorflow as tf
 import tensorflow.python.ops as ops
 
-
 # The outer function is a constructor to create a loss function using a certain number of classes.
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
   
-  def __init__(self, num_classes, importance = None, name = "ordinal_crossent", **kwargs):
+  def __init__(self, num_classes, importance = None,
+               from_type = "ordinal_logits",
+               name = "ordinal_crossent", **kwargs):
+    """ Cross-entropy loss designed for ordinal outcomes.
+    
+    Args:
+      num_classes: how many ranks (aka labels or values) are in the ordinal variable.
+      importance: (Optional) importance weights for each binary classification task.
+      from_type: one of "ordinal_logits" (default), "logits", or "probs".
+        Ordinal logits are the output of a CoralOrdinal() layer with no activation.
+        Logits are the output of a dense layer with no activation.
+        Probs are the probability outputs of a softmax or ordinal_softmax layer.
+    """
     super(OrdinalCrossEntropy, self).__init__(name = name, **kwargs)
     
     self.num_classes = num_classes
@@ -14,6 +25,8 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
       self.importance_weights = tf.ones(num_classes - 1, dtype = tf.float32)
     else:
       self.importance_weights = importance
+      
+    self.from_type = from_type
 
 
   @tf.function
@@ -40,13 +53,19 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     y_pred = ops.convert_to_tensor_v2(y_pred)
     y_true = tf.cast(y_true, y_pred.dtype)
 
-    # Convert each label to a vector of level indicators.
+    # Convert each true label to a vector of ordinal level indicators.
     tf_levels = tf.map_fn(self.label_to_levels, y_true)
-
-    # Now call the original loss function.
-    return ordinal_loss(y_pred, tf_levels, self.importance_weights)
-
-
+    
+    if this.from_type == "ordinal_logits":
+      return ordinal_loss(y_pred, tf_levels, self.importance_weights)
+    elif this.from_type == "probs":
+      raise Exception("not yet implemented")
+    elif this.from_type == "logits":
+      raise Exception("not yet implemented")
+    else:
+      raise Exception("Unknown from_type value " + this.from_type +
+                      " in OrdinalCrossEntropy()")
+    
 def ordinal_loss(logits, levels, imp):
     levels = tf.cast(levels, tf.float32)
     val = (-tf.reduce_sum((tf.math.log_sigmoid(logits) * levels
