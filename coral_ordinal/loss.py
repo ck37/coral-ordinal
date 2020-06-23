@@ -56,11 +56,11 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     # Convert each true label to a vector of ordinal level indicators.
     tf_levels = tf.map_fn(self.label_to_levels, y_true)
     
-    if this.from_type == "ordinal_logits":
+    if self.from_type == "ordinal_logits":
       return ordinal_loss(y_pred, tf_levels, self.importance_weights)
-    elif this.from_type == "probs":
+    elif self.from_type == "probs":
       raise Exception("not yet implemented")
-    elif this.from_type == "logits":
+    elif self.from_type == "logits":
       raise Exception("not yet implemented")
     else:
       raise Exception("Unknown from_type value " + this.from_type +
