@@ -2,6 +2,8 @@ import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
+from .loss import OrdinalCrossEntropy
+
 class CoralOrdinal(tf.keras.layers.Layer):
 
   # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
@@ -19,7 +21,9 @@ class CoralOrdinal(tf.keras.layers.Layer):
     
     # Add ordinal loss automatically
     if add_loss:
+      # Currently broken.
       self.add_loss(OrdinalCrossEntropy(num_classes, importance = importance))
+      
 
   # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
   def build(self, input_shape):
