@@ -8,7 +8,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
   # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
   # in case the user doesn't know the input dimensions when defining the model.
-  def __init__(self, num_classes, add_loss = False, importance = None, **kwargs):
+  def __init__(self, num_classes, importance = None, **kwargs):
     
     # Via Dense Layer code:
     # https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/layers/core.py#L1128
@@ -19,12 +19,6 @@ class CoralOrdinal(tf.keras.layers.Layer):
     super(CoralOrdinal, self).__init__(**kwargs)
     self.num_classes = num_classes
     
-    # Add ordinal loss automatically
-    if add_loss:
-      # Currently broken.
-      self.add_loss(OrdinalCrossEntropy(num_classes, importance = importance))
-      
-
   # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
   def build(self, input_shape):
 
