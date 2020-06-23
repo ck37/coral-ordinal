@@ -1,11 +1,19 @@
 # CORAL ordinal classification in tf.keras
 
 
-Tensorflow Keras implementation of ordinal classification using CORAL by Cao et al. (2019), with thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from PyTorch. This package includes an ordinal output layer and an associated loss function.
+Tensorflow Keras implementation of ordinal classification using consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019).
+
+This package includes:
+
+  * Ordinal output layer: `CoralOrdinal()`
+  * Ordinal loss function: `OrdinalCrossEntropy()`
+  * Ordinal accuracy metric: `MeanAbsoluteErrorLabels()`
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
 [Source repository](https://github.com/Raschka-research-group/coral-cnn/) for the original PyTorch implementation.
+
+**Acknowledgments**: Many thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from PyTorch.
 
 Key pending items:
 
