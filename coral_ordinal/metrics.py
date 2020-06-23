@@ -4,7 +4,8 @@ def MeanAbsoluteErrorLabels(y_true, y_pred):
   # Assume that y_pred is cumulative logits from our CoralOrdinal layer.
   
   # Predict the label as in Cao et al. - using cumulative probabilities
-  cum_probs = pd.DataFrame(preds).apply(special.expit)
+  cum_probs = tf.map_fn(tf.math.sigmoid, preds)
+  
   # Calculate the labels using the style of Cao et al.
   labels_v2 = cum_probs.apply(lambda x: x > 0.5).sum(axis = 1)
   
