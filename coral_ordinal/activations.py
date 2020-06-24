@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.python.util.tf_export import keras_export
 
-@keras_export('keras.activations.ordinal_softmax')
 def ordinal_softmax(x, axis = -1):
   """ Convert the ordinal logit output of CoralOrdinal() to label probabilities.
   
@@ -10,11 +9,11 @@ def ordinal_softmax(x, axis = -1):
     axis: Not yet supported.
   """
   
-  # Convert the ordinal logits into cumulative probabilities.
-  cum_probs = tf.map_fn(tf.math.sigmoid, x)
-  
   # Number of columns is the number of classes - 1
   num_classes = x.shape[1] + 1
+  
+  # Convert the ordinal logits into cumulative probabilities.
+  cum_probs = tf.map_fn(tf.math.sigmoid, x)
   
   # Create a list of tensors.
   probs = []
@@ -35,7 +34,7 @@ def ordinal_softmax(x, axis = -1):
   # Special handling of the maximum label value.
   probs.append(cum_probs[:, num_classes - 2])
   
-  # Column as columns into a new tensor.
-  probs_tensor = tf.concat(probs, axis = 1)
+  # Combine as columns into a new tensor.
+  probs_tensor = tf.concat(tf.transpose(probs), axis = 1)
   
   return probs_tensor
