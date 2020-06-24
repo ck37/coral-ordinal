@@ -62,7 +62,7 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     elif self.from_type == "logits":
       raise Exception("not yet implemented")
     else:
-      raise Exception("Unknown from_type value " + this.from_type +
+      raise Exception("Unknown from_type value " + self.from_type +
                       " in OrdinalCrossEntropy()")
     
 def ordinal_loss(logits, levels, imp):
