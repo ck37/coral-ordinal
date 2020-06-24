@@ -8,7 +8,7 @@ This package includes:
   * Ordinal output layer: `CoralOrdinal()`
   * Ordinal loss function: `OrdinalCrossEntropy()`
   * Ordinal error metric: `MeanAbsoluteErrorLabels()`
-  * Ordinal activation function: `logits_to_probs()`
+  * Ordinal activation function: `ordinal_softmax()`
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
 
