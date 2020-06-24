@@ -14,8 +14,8 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
       importance: (Optional) importance weights for each binary classification task.
       from_type: one of "ordinal_logits" (default), "logits", or "probs".
         Ordinal logits are the output of a CoralOrdinal() layer with no activation.
-        Logits are the output of a dense layer with no activation.
-        Probs are the probability outputs of a softmax or ordinal_softmax layer.
+        (Not yet implemented) Logits are the output of a dense layer with no activation.
+        (Not yet implemented) Probs are the probability outputs of a softmax or ordinal_softmax layer.
     """
     super(OrdinalCrossEntropy, self).__init__(name = name, **kwargs)
     
@@ -29,7 +29,6 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     self.from_type = from_type
 
 
-  @tf.function
   def label_to_levels(self, label):
     # Original code that we are trying to replicate:
     # levels = [1] * label + [0] * (self.num_classes - 1 - label)

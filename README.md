@@ -19,7 +19,6 @@ Key pending items:
   * Function docstrings
   * Docs
   * Tests
-  * Custom metrics: accuracy, cross-entropy
 
 ## Installation
 
