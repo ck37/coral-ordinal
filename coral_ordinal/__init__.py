@@ -13,5 +13,4 @@ __all__ = [
   'MeanAbsoluteErrorLabels',
   'OrdinalCrossEntropy',
   'ordinal_softmax',
-  'logits_to_probs',
 ]
