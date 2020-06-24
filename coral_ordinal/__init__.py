@@ -2,7 +2,6 @@ from .version import __version__
 
 from .layer import CoralOrdinal
 from .loss import OrdinalCrossEntropy
-from .utils import logits_to_probs
 from .metrics import MeanAbsoluteErrorLabels
 from .activations import ordinal_softmax
 
