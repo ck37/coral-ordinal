@@ -43,11 +43,13 @@ This package relies on Python 3.6+, Tensorflow 2.2+, and numpy.
 ```python
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation = "relu"))
-model.add(coral.CoralOrdinal(num_classes))
+model.add(coral.CoralOrdinal(num_classes = 5)) # Ordinal variable has 5 labels, 0 through 4.
 model.compile(loss = coral.OrdinalCrossEntropy(), metrics = [coral.MeanAbsoluteErrorLabels])
 ```
 
 [See this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for extended examples of ordinal regression with MNIST (multilayer perceptron) and Amazon reviews (universal sentence encoder).
+
+Note that the minimum value of the ordinal variable needs to be 0. If your labeled data ranges from 1 to 5, you will need to subtract 1 so that it is scaled to be 0 to 4.
 
 
 ## References
