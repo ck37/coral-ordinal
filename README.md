@@ -36,11 +36,19 @@ pip install git+https://github.com/ck37/coral-ordinal/
 
 ## Dependencies
 
-This package relies on Python 3.6+, Tensorflow 2.2+, numpy, pandas, and scipy.
+This package relies on Python 3.6+, Tensorflow 2.2+, and numpy.
 
 ## Example
 
-[See this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for examples of ordinal regression with MNIST (multilayer perceptron) and Amazon reviews (universal sentence encoder).
+```python
+model = tf.keras.Sequential()
+model.add(tf.keras.layers.Dense(32, activation = "relu"))
+model.add(coral.CoralOrdinal(num_classes))
+model.compile(loss = coral.OrdinalCrossEntropy(), metrics = [coral.MeanAbsoluteErrorLabels])
+```
+
+[See this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for extended examples of ordinal regression with MNIST (multilayer perceptron) and Amazon reviews (universal sentence encoder).
+
 
 ## References
 
