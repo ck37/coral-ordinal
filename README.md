@@ -40,7 +40,10 @@ This package relies on Python 3.6+, Tensorflow 2.2+, and numpy.
 
 ## Example
 
+This is a quick example to show a basic model implementation. With actual data one would also want to specify the input shape.
+
 ```python
+import coral_ordinal as coral
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation = "relu"))
 model.add(coral.CoralOrdinal(num_classes = 5)) # Ordinal variable has 5 labels, 0 through 4.
