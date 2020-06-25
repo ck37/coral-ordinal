@@ -10,7 +10,7 @@ This package includes:
   * Ordinal error metric: `MeanAbsoluteErrorLabels()`
   * Ordinal activation function: `ordinal_softmax()`
 
-This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues).
+This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues). The package was developed as part of the Berkeley D-Lab's [hate speech measurement project](https://hatespeech.berkeley.edu) and paper (Kennedy et al. 2020).
 
 **Acknowledgments**: Many thanks to [Sebastian Raschka](https://github.com/rasbt) for the help in porting from the [PyTorch source repository](https://github.com/Raschka-research-group/coral-cnn/).
 
@@ -55,3 +55,5 @@ Note that the minimum value of the ordinal variable needs to be 0. If your label
 ## References
 
 Cao, W., Mirjalili, V., & Raschka, S. (2019). [Consistent rank logits for ordinal regression with convolutional neural networks]( https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6. 
+
+Kennedy, C., Bacon, G., Sahn, A., Broege, N., & von Vacano, C. (2020). Constructing interval latent variables via Rasch measurement and multitask deep learning: a hate speech application. https://hatespeech.berkeley.edu
