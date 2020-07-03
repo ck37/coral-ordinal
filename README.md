@@ -1,7 +1,7 @@
 # Ordinal regression in Tensorflow Keras
 
-[![PyPi version](https://pypip.in/v/coral-ordinal/badge.png)](https://crate.io/packages/coral-ordinal/)
-[![PyPi downloads](https://pypip.in/d/coral-ordinal/badge.png)](https://crate.io/packages/coral-ordinal/)
+[![PyPi version](https://pypip.in/v/coral-ordinal/badge.png)](https://pypi.org/project/coral-ordinal/)
+[![PyPi downloads](https://pypip.in/d/coral-ordinal/badge.png)](https://pypi.org/project/coral-ordinal/)
 
 
 Tensorflow Keras implementation of ordinal regression (aka ordinal classification) using consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019).
