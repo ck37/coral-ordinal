@@ -23,12 +23,18 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     """
     super(OrdinalCrossEntropy, self).__init__(name = name, **kwargs)
     
-      
-    self.importance_weights = importance
-    self.from_type = from_type
     self.num_classes = num_classes
+      
+    #self.importance_weights = importance
+    if importance is None:
+      self.importance_weights = tf.ones(self.num_classes - 1, dtype = tf.float32)
+    else:
+      self.importance_weights = tf.cast(importance, dtype = tf.float32)
+      
+    self.from_type = from_type
 
 
+  # TODO: pre-compute so that this can be much faster on GPU.
   def label_to_levels(self, label):
     # Original code that we are trying to replicate:
     # levels = [1] * label + [0] * (self.num_classes - 1 - label)
@@ -61,12 +67,15 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         self.num_classes = y_pred.shape[1]
 
     # Convert each true label to a vector of ordinal level indicators.
+    # TODO: do this outside of the model, so that it's faster?
     tf_levels = tf.map_fn(self.label_to_levels, y_true)
     
-    if self.importance_weights is None:
-      self.importance_weights = np.ones(self.num_classes - 1, dtype = np.float32)
+    #if self.importance_weights is None:
+      #self.importance_weights = np.ones(self.num_classes - 1, dtype = np.float32)
+      #self.importance_weights = tf.ones(self.num_classes - 1, dtype = np.float32)
     
     if self.from_type == "ordinal_logits":
+      #return ordinal_loss(y_pred, tf_levels, self.importance_weights)
       return ordinal_loss(y_pred, tf_levels, self.importance_weights)
     elif self.from_type == "probs":
       raise Exception("not yet implemented")
@@ -76,9 +85,11 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
       raise Exception("Unknown from_type value " + self.from_type +
                       " in OrdinalCrossEntropy()")
     
+#def ordinal_loss(logits, levels, importance):
 def ordinal_loss(logits, levels, importance):
-    levels = tf.cast(levels, tf.float32)
+    #levels = tf.cast(levels, tf.float32)
     val = (-tf.reduce_sum((tf.math.log_sigmoid(logits) * levels
-                      + (tf.math.log_sigmoid(logits) - logits) * (1 - levels)) * tf.convert_to_tensor(importance, dtype = tf.float32),
+                      #+ (tf.math.log_sigmoid(logits) - logits) * (1 - levels)) * tf.convert_to_tensor(importance, dtype = tf.float32),
+                      + (tf.math.log_sigmoid(logits) - logits) * (1 - levels)) * importance,
            axis = 1))
     return tf.reduce_mean(val)
