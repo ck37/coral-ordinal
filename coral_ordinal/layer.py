@@ -35,7 +35,8 @@ class CoralOrdinal(tf.keras.layers.Layer):
     # https://pytorch.org/docs/master/generated/torch.nn.Linear.html
     # and https://www.tensorflow.org/api_docs/python/tf/keras/initializers/GlorotUniform
     self.fc = self.add_weight(shape = (input_shape[-1], num_units),
-                              name = "coral_latent",
+    # Need a unique name if there are multiple coral_ordinal layers.
+                              name = self.name + "_latent",
                               initializer = 'glorot_uniform',
                               # Not sure if this is necessary:
                               dtype = tf.float32,
@@ -43,7 +44,8 @@ class CoralOrdinal(tf.keras.layers.Layer):
                               
     # num_classes - 1 bias terms, defaulting to 0.
     self.linear_1_bias = self.add_weight(shape = (self.num_classes - 1, ),
-                                         name = "coral_bias",
+    # Need a unique name if there are multiple coral_ordinal layers.
+                                         name = self.name + "_bias",
                                          initializer = 'zeros',
                                          # Not sure if this is necessary:
                                          dtype = tf.float32,
