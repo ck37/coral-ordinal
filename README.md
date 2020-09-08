@@ -60,6 +60,6 @@ Note that the minimum value of the ordinal variable needs to be 0. If your label
 
 ## References
 
-Cao, W., Mirjalili, V., & Raschka, S. (2019). [Consistent rank logits for ordinal regression with convolutional neural networks]( https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6. 
+Cao, W., Mirjalili, V., & Raschka, S. (2019). [Rank-consistent ordinal regression for neural networks]( https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6. 
 
-Kennedy, C., Bacon, G., Sahn, A., Broege, N., & von Vacano, C. (2020). Constructing interval latent variables via Rasch measurement and multitask deep learning: a hate speech application. https://hatespeech.berkeley.edu
+Kennedy, C., Bacon, G., Sahn, A., & von Vacano, C. (2020). Constructing interval latent variables via Rasch measurement and multitask deep learning: a hate speech application. https://hatespeech.berkeley.edu
