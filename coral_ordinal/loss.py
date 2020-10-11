@@ -1,5 +1,5 @@
 import tensorflow as tf
-import tensorflow.python.ops as ops
+#import tensorflow.python.ops as ops
 import numpy as np
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
@@ -55,7 +55,8 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
   def call(self, y_true, y_pred):
 
     # Ensure that y_true is the same type as y_pred (presumably a float).
-    y_pred = ops.convert_to_tensor_v2(y_pred)
+    #y_pred = ops.convert_to_tensor_v2(y_pred)
+    y_pred = tf.convert_to_tensor(y_pred)
     y_true = tf.cast(y_true, y_pred.dtype)
     
     if self.num_classes is None:
