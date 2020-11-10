@@ -44,12 +44,12 @@ def test_mae_labels_score():
     # [7, 2, 1] - [0, 0, 0] = (7 + 2 + 1) / 3 = 3.3333333333
     np.testing.assert_allclose(3.3333333333, mael_obj2.result())
 
-    mael_obj2 = MeanAbsoluteErrorLabels()
-    mael_obj2.update_state(
+    mael_obj3 = MeanAbsoluteErrorLabels()
+    mael_obj3.update_state(
         tf.constant(actuals[2], dtype=tf.int32),
         tf.constant(preds[2], dtype=tf.float32))
     # [0, 0, 0] - [0, 0, 0] = 0
-    np.testing.assert_allclose(0., mael_obj2.result())
+    np.testing.assert_allclose(0., mael_obj3.result())
 
 
 def test_mae_labels_running_score():
@@ -59,6 +59,7 @@ def test_mae_labels_running_score():
         mael_obj.update_state(
             tf.constant(a, dtype=tf.int32),
             tf.constant(p, dtype=tf.float32))
+    # (0 + 3.3333333333 + 0) / 3 = 1.1111111111
     np.testing.assert_allclose(1.1111111111, mael_obj.result())
 
     mael_obj.reset_states()
