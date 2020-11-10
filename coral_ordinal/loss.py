@@ -6,33 +6,26 @@ import numpy as np
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
   
   def __init__(self,
-               num_classes = None,
-               importance = None,
+               num_classes,
+               importance_weights = None,
                from_type = "ordinal_logits",
-               name = "ordinal_crossent", **kwargs):
+               name = "ordinal_crossent",
+               reduction = tf.keras.losses.Reduction.NONE):
     """ Cross-entropy loss designed for ordinal outcomes.
     
     Args:
-      num_classes: (Optional) how many ranks (aka labels or values) are in the ordinal variable.
-        If not provided it will be automatically determined by on the prediction data structure.
-      importance: (Optional) importance weights for each binary classification task.
+      num_classes: number of ranks (aka labels or values) in the ordinal variable.
+      importance_weights: (Optional) importance weights for each binary classification task.
       from_type: one of "ordinal_logits" (default), "logits", or "probs".
         Ordinal logits are the output of a CoralOrdinal() layer with no activation.
         (Not yet implemented) Logits are the output of a dense layer with no activation.
         (Not yet implemented) Probs are the probability outputs of a softmax or ordinal_softmax layer.
     """
-    super(OrdinalCrossEntropy, self).__init__(name = name, **kwargs)
+    super().__init__(name = name, reduction = reduction)
     
     self.num_classes = num_classes
-      
-    #self.importance_weights = importance
-    if importance is None:
-      self.importance_weights = tf.ones(self.num_classes - 1, dtype = tf.float32)
-    else:
-      self.importance_weights = tf.cast(importance, dtype = tf.float32)
-      
+    self.importance_weights = importance_weights
     self.from_type = from_type
-
 
   # TODO: pre-compute so that this can be much faster on GPU.
   def label_to_levels(self, label):
@@ -59,25 +52,17 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     y_pred = tf.convert_to_tensor(y_pred)
     y_true = tf.cast(y_true, y_pred.dtype)
     
-    if self.num_classes is None:
-      # Determine number of classes based on prediction shape.
-      if self.from_type == "ordinal_logits":
-        # Number of classes = number of columns + 1
-        self.num_classes = y_pred.shape[1] + 1
-      else:
-        self.num_classes = y_pred.shape[1]
-
     # Convert each true label to a vector of ordinal level indicators.
     # TODO: do this outside of the model, so that it's faster?
     tf_levels = tf.map_fn(self.label_to_levels, y_true)
-    
-    #if self.importance_weights is None:
-      #self.importance_weights = np.ones(self.num_classes - 1, dtype = np.float32)
-      #self.importance_weights = tf.ones(self.num_classes - 1, dtype = np.float32)
+
+    if self.importance_weights is None:
+      importance_weights = tf.ones(self.num_classes - 1, dtype = tf.float32)
+    else:
+      importance_weights = tf.cast(self.importance_weights, dtype = tf.float32)
     
     if self.from_type == "ordinal_logits":
-      #return ordinal_loss(y_pred, tf_levels, self.importance_weights)
-      return ordinal_loss(y_pred, tf_levels, self.importance_weights)
+      return ordinal_loss(y_pred, tf_levels, importance_weights)
     elif self.from_type == "probs":
       raise Exception("not yet implemented")
     elif self.from_type == "logits":
@@ -85,6 +70,15 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     else:
       raise Exception("Unknown from_type value " + self.from_type +
                       " in OrdinalCrossEntropy()")
+
+  def get_config(self):
+    config = {
+        "num_classes": self.num_classes,
+        "importance_weights": self.importance_weights,
+        "from_type": self.from_type,
+    }
+    base_config = super().get_config()
+    return {**base_config, **config}
     
 #def ordinal_loss(logits, levels, importance):
 def ordinal_loss(logits, levels, importance):
