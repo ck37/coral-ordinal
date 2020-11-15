@@ -47,10 +47,12 @@ This is a quick example to show a basic model implementation. With actual data o
 
 ```python
 import coral_ordinal as coral
+NUM_CLASSES = 5
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation = "relu"))
-model.add(coral.CoralOrdinal(num_classes = 5)) # Ordinal variable has 5 labels, 0 through 4.
-model.compile(loss = coral.OrdinalCrossEntropy(), metrics = [coral.MeanAbsoluteErrorLabels])
+model.add(coral.CoralOrdinal(num_classes = NUM_CLASSES)) # Ordinal variable has 5 labels, 0 through 4.
+model.compile(loss = coral.OrdinalCrossEntropy(num_classes = NUM_CLASSES),
+              metrics = [coral.MeanAbsoluteErrorLabels()])
 ```
 
 [See this colab notebook](https://colab.research.google.com/drive/1AQl4XeqRRhd7l30bmgLVObKt5RFPHttn) for extended examples of ordinal regression with MNIST (multilayer perceptron) and Amazon reviews (universal sentence encoder).
