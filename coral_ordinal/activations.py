@@ -14,7 +14,7 @@ def ordinal_softmax(x, axis=-1):
     num_classes = x.shape[1] + 1
 
     # Convert the ordinal logits into cumulative probabilities.
-    cum_probs = tf.map_fn(tf.math.sigmoid, x)
+    cum_probs = tf.math.sigmoid(x)
 
     # Create a list of tensors.
     probs = []
