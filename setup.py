@@ -16,7 +16,7 @@ with open(os.path.join(_here, 'README.md'), encoding='utf-8') as f:
 setup(
     name = 'coral-ordinal',
     url = 'https://github.com/ck37/coral-ordinal',
-    author = 'Chris Kennedy, Stephen Matthews',
+    author = 'Chris Kennedy, Stephen Matthews, Georg M. Goerg',
     author_email = 'chrisken@gmail.com',
     packages = setuptools.find_packages(),
     install_requires = ['numpy', 'tensorflow>=2.2'],
