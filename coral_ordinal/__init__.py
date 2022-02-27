@@ -1,7 +1,7 @@
 from .version import __version__
 
-from .layer import CoralOrdinal
-from .loss import OrdinalCrossEntropy
+from .layer import CoralOrdinal, CornOrdinal
+from .loss import OrdinalCrossEntropy, CornOrdinalCrossEntropy
 from .metrics import MeanAbsoluteErrorLabels
 from .activations import ordinal_softmax
 
@@ -9,7 +9,9 @@ from .activations import ordinal_softmax
 # be able to access:
 __all__ = [
     "CoralOrdinal",
+    "CornOrdinal",
     "MeanAbsoluteErrorLabels",
     "OrdinalCrossEntropy",
+    "CornOrdinalCrossEntropy",
     "ordinal_softmax",
 ]

@@ -29,8 +29,10 @@ def _ordinal_loss_no_reduction(
 
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
-@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+# @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
+    """Computes ordinal cross entropy based on ordinal predictions and outcomes."""
+
     def __init__(
         self,
         num_classes: Optional[int] = None,
@@ -107,3 +109,82 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         }
         base_config = super().get_config()
         return {**base_config, **config}
+
+
+class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
+    """Implements CORN ordinal loss function for logits."""
+
+    def __init__(
+        self,
+        reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
+        **kwargs,
+    ):
+        """Initializes class."""
+        if not reduction in [
+            tf.keras.losses.Reduction.AUTO,
+            tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
+        ]:
+            raise NotImplementedError(f"reduction={reduction} is not implemented.")
+        super().__init__(reduction=reduction, **kwargs)
+        self.num_classes = None
+
+    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor):
+        """Computes the CORN loss described in https://arxiv.org/abs/2111.08851
+
+        Args:
+          y_true: true labels (0..N-1)
+          y_pred: predicted logits (from CornLayer())
+
+        Returns:
+          loss: tf.Tensor, that contains the loss value.
+
+        Examples
+        ----------
+        >>> import torch
+        >>> # Consider 8 training examples
+        >>> _  = torch.manual_seed(123)
+        >>> X_train = torch.rand(8, 99)
+        >>> y_train = torch.tensor([0, 1, 2, 2, 2, 3, 4, 4])
+        >>> NUM_CLASSES = 5
+        >>> #
+        >>> #
+        >>> # def __init__(self):
+        >>> corn_net = torch.nn.Linear(99, NUM_CLASSES-1)
+        >>> #
+        >>> #
+        >>> # def forward(self, X_train):
+        >>> logits = corn_net(X_train)
+        >>> logits.shape
+        torch.Size([8, 4])
+        >>> corn_loss(logits, y_train, NUM_CLASSES)
+        tensor(3.4210, grad_fn=<DivBackward0>)
+        """
+        y_pred = tf.convert_to_tensor(y_pred, dtype=tf.float32)
+        y_true = tf.cast(y_true, y_pred.dtype)
+        if self.num_classes is None:
+            self.num_classes = int(y_pred.get_shape().as_list()[1]) + 1
+
+        sets = []
+        for i in range(self.num_classes - 1):
+            label_mask = y_true > i - 1
+            label_tensor = tf.cast(y_true[label_mask] > i, dtype=tf.float32)
+            sets.append((label_mask, label_tensor))
+
+        num_examples = 0
+        losses = 0.0
+        for task_index, s in enumerate(sets):
+            train_mask = s[0]
+            train_labels = s[1]
+            if len(train_labels) < 1:
+                continue
+
+            num_examples += len(train_labels)
+            pred = y_pred[train_mask][:, task_index]
+
+            loss = -tf.reduce_sum(
+                tf.math.log_sigmoid(pred) * train_labels
+                + (tf.math.log_sigmoid(pred) - pred) * (1.0 - train_labels)
+            )
+            losses += loss
+
+        return losses / self.num_classes
