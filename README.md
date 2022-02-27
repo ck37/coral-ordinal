@@ -51,7 +51,7 @@ NUM_CLASSES = 5
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation = "relu"))
 model.add(coral.CoralOrdinal(num_classes = NUM_CLASSES)) # Ordinal variable has 5 labels, 0 through 4.
-model.compile(loss = coral.OrdinalCrossEntropy(num_classes = NUM_CLASSES),
+model.compile(loss = coral.OrdinalCrossEntropy(),
               metrics = [coral.MeanAbsoluteErrorLabels()])
 ```
 
