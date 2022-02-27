@@ -5,20 +5,12 @@ import tensorflow as tf
 import numpy as np
 
 
-def _label_to_levels(label: tf.Tensor, num_classes: int):
+def _label_to_levels(labels: tf.Tensor, num_classes: int) -> tf.Tensor:
     # Original code that we are trying to replicate:
     # levels = [1] * label + [0] * (self.num_classes - 1 - label)
-    label_vec = tf.repeat(1, tf.cast(tf.squeeze(label), tf.int32))
-
-    # This line requires that label values begin at 0. If they start at a higher
-    # value it will yield an error.
-    num_zeros = num_classes - 1 - tf.cast(tf.squeeze(label), tf.int32)
-
-    zero_vec = tf.zeros(shape=(num_zeros), dtype=tf.int32)
-
-    levels = tf.concat([label_vec, zero_vec], axis=0)
-
-    return tf.cast(levels, tf.float32)
+    # This function uses tf.sequence_mask(), which is vectorized. Avoids map_fn()
+    # call.
+    return tf.sequence_mask(labels, maxlen=num_classes - 1, dtype=tf.float32)
 
 
 def _ordinal_loss_no_reduction(
@@ -76,8 +68,7 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
             self.num_classes = int(y_pred.get_shape().as_list()[1]) + 1
 
         # Convert each true label to a vector of ordinal level indicators.
-        fn = functools.partial(_label_to_levels, num_classes=self.num_classes)
-        tf_levels = tf.map_fn(fn, y_true)
+        tf_levels = _label_to_levels(tf.squeeze(y_true), self.num_classes)
 
         if self.importance_weights is None:
             importance_weights = tf.ones(self.num_classes - 1, dtype=tf.float32)

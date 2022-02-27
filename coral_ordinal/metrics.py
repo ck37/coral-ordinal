@@ -16,8 +16,8 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
         """Computes mean absolute error for ordinal labels.
 
         Args:
-          y_true: Cumulatiuve logits from CoralOrdinal layer.
-          y_pred: Labels.
+          y_true: Labels (int).
+          y_pred: Cumulative logits from CoralOrdinal layer.
           sample_weight (optional): Not implemented.
         """
 
@@ -32,7 +32,7 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
 
         # Skip sigmoid and just operate on logit scale, since logit > 0 is
         # equivalent to prob > 0.5.
-        above_thresh = tf.map_fn(lambda x: tf.cast(x > 0.0, tf.float32), y_pred)
+        above_thresh = tf.cast(y_pred > 0.0, tf.float32)
 
         # Sum across columns to estimate how many cumulative thresholds are passed.
         labels_v2 = tf.reduce_sum(above_thresh, axis=1)
@@ -48,7 +48,7 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
     def result(self):
         return tf.math.divide_no_nan(self.maes, self.count)
 
-    def reset_states(self):
+    def reset_state(self):
         """Resets all of the metric state variables at the start of each epoch."""
         K.batch_set_value([(v, 0) for v in self.variables])
 
