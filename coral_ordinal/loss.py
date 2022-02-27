@@ -29,7 +29,7 @@ def _ordinal_loss_no_reduction(
 
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
-# @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
     def __init__(
         self,
