@@ -29,7 +29,7 @@ def _ordinal_loss_no_reduction(
 
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
-# @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
     """Computes ordinal cross entropy based on ordinal predictions and outcomes."""
 
@@ -111,6 +111,7 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         return {**base_config, **config}
 
 
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
     """Implements CORN ordinal loss function for logits."""
 
@@ -137,27 +138,6 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
 
         Returns:
           loss: tf.Tensor, that contains the loss value.
-
-        Examples
-        ----------
-        >>> import torch
-        >>> # Consider 8 training examples
-        >>> _  = torch.manual_seed(123)
-        >>> X_train = torch.rand(8, 99)
-        >>> y_train = torch.tensor([0, 1, 2, 2, 2, 3, 4, 4])
-        >>> NUM_CLASSES = 5
-        >>> #
-        >>> #
-        >>> # def __init__(self):
-        >>> corn_net = torch.nn.Linear(99, NUM_CLASSES-1)
-        >>> #
-        >>> #
-        >>> # def forward(self, X_train):
-        >>> logits = corn_net(X_train)
-        >>> logits.shape
-        torch.Size([8, 4])
-        >>> corn_loss(logits, y_train, NUM_CLASSES)
-        tensor(3.4210, grad_fn=<DivBackward0>)
         """
         y_pred = tf.convert_to_tensor(y_pred, dtype=tf.float32)
         y_true = tf.cast(y_true, y_pred.dtype)

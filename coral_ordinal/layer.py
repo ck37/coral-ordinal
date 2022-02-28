@@ -98,11 +98,13 @@ class CornOrdinal(tf.keras.layers.Dense):
         super(CornOrdinal, self).__init__(
             units=num_classes - 1, activation=activation, **kwargs
         )
+        if activation is not None:
+            raise NotImplementedError(
+                f"CornOrdinal() must return logits. Got {activation}."
+            )
         self.num_classes = num_classes
         self.activation = activation
 
-    # This allows for serialization supposedly.
-    # https://www.tensorflow.org/guide/keras/custom_layers_and_models#you_can_optionally_enable_serialization_on_your_layers
     def get_config(self):
         config = super(CornOrdinal, self).get_config()
         config.update({"num_classes": self.num_classes, "activation": self.activation})
