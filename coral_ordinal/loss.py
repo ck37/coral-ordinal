@@ -31,6 +31,8 @@ def _ordinal_loss_no_reduction(
 # The outer function is a constructor to create a loss function using a certain number of classes.
 @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
+    """Computes ordinal cross entropy based on ordinal predictions and outcomes."""
+
     def __init__(
         self,
         num_classes: Optional[int] = None,
@@ -107,3 +109,67 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         }
         base_config = super().get_config()
         return {**base_config, **config}
+
+
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
+    """Implements CORN ordinal loss function for logits."""
+
+    def __init__(
+        self,
+        reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
+        **kwargs,
+    ):
+        """Initializes class."""
+        if not reduction in [
+            tf.keras.losses.Reduction.AUTO,
+            tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
+        ]:
+            raise NotImplementedError(f"reduction={reduction} is not implemented.")
+        super().__init__(reduction=reduction, **kwargs)
+        self.num_classes = None
+
+    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor):
+        """Computes the CORN loss described in https://arxiv.org/abs/2111.08851
+
+        Args:
+          y_true: true labels (0..N-1)
+          y_pred: predicted logits (from CornLayer())
+
+        Returns:
+          loss: tf.Tensor, that contains the loss value.
+        """
+        y_pred = tf.convert_to_tensor(y_pred, dtype=tf.float32)
+        y_true = tf.cast(y_true, y_pred.dtype)
+        y_true = tf.squeeze(y_true)
+        if self.num_classes is None:
+            self.num_classes = int(y_pred.get_shape().as_list()[1]) + 1
+
+        sets = []
+        for i in range(self.num_classes - 1):
+            set_mask = y_true > i - 1
+            label_gt_i = y_true > i
+            sets.append((set_mask, label_gt_i))
+
+        n_examples = []
+        losses = 0.0
+        for task_index, s in enumerate(sets):
+            set_mask, label_gt_i = s
+            n_examples_task = tf.reduce_sum(tf.cast(set_mask, dtype=tf.float32))
+            n_examples.append(n_examples_task)
+            if tf.keras.backend.equal(n_examples_task, 0.0):
+                continue
+
+            pred_task = tf.gather(y_pred, task_index, axis=1)
+            losses_task = tf.where(
+                set_mask,
+                tf.where(
+                    label_gt_i,
+                    tf.math.log_sigmoid(pred_task),  # if label > i
+                    tf.math.log_sigmoid(pred_task) - pred_task,  # if label <= i
+                ),
+                0.0,  # don't add to loss if label is <= i - 1
+            )
+            losses += -tf.reduce_sum(losses_task)
+
+        return losses / self.num_classes

@@ -4,14 +4,19 @@
 [![PyPi downloads](https://img.shields.io/pypi/dm/coral-ordinal?style=flat)](https://pypi.org/project/coral-ordinal/)
 
 
-Tensorflow Keras implementation of ordinal regression (aka ordinal classification) using consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019).
+Tensorflow Keras implementation of ordinal regression (aka *ordinal classification*) using 
+
+* **CORAL**: consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019)
+
+* **CORN**: conditional ordinal regression for neural networks (CORN) by Shi X., Cao W., & Raschka S. (2021).
 
 This package includes:
 
-  * Ordinal output layer: `CoralOrdinal()`
-  * Ordinal loss function: `OrdinalCrossEntropy()`
+  * Ordinal output layers: `CoralOrdinal()` & `CornOrdinal()`
+  * Ordinal loss function:s `OrdinalCrossEntropy()` & `CornOrdinalCrossEntropy()`
   * Ordinal error metric: `MeanAbsoluteErrorLabels()`
-  * Ordinal activation function: `ordinal_softmax()`
+  * Ordinal activation functions: `ordinal_softmax()` & `corn_ordinal_softmax()`
+  * Ordinal label prediction functions: `cumprobs_to_label()`
 
 This is a work in progress, so please post any issues to the [issue queue](https://github.com/ck37/coral-ordinal/issues). The package was developed as part of the Berkeley D-Lab's [hate speech measurement project](https://hatespeech.berkeley.edu) and paper (Kennedy et al. 2020).
 
@@ -63,5 +68,7 @@ Note that the minimum value of the ordinal variable needs to be 0. If your label
 ## References
 
 Cao, W., Mirjalili, V., & Raschka, S. (2019). [Rank-consistent ordinal regression for neural networks](https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6. 
+
+Shi X., Cao W., & Raschka S. (2021). [Deep Neural Networks for Rank-Consistent Ordinal Regression Based On Conditional Probabilities](https://arxiv.org/abs/2111.08851). arXiv preprint arXiv:211108851
 
 Kennedy, C. J., Bacon, G., Sahn, A., & von Vacano, C. (2020). [Constructing interval variables via faceted Rasch measurement and multitask deep learning: a hate speech application](https://arxiv.org/abs/2009.10277). arXiv preprint arXiv:2009.10277.

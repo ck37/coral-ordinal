@@ -1,14 +1,33 @@
 import tensorflow as tf
 from tensorflow.keras import backend as K
 
+from . import activations
+
 
 @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
     """Computes mean absolute error for ordinal labels."""
 
-    def __init__(self, name="mean_absolute_error_labels", **kwargs):
-        """Creates a `MeanAbsoluteErrorLabels` instance."""
-        super(MeanAbsoluteErrorLabels, self).__init__(name=name, **kwargs)
+    def __init__(
+        self,
+        corn_logits: bool = False,
+        threshold: float = 0.5,
+        name="mean_absolute_error_labels",
+        **kwargs
+    ):
+        """Creates a `MeanAbsoluteErrorLabels` instance.
+
+        Args:
+          corn_logits: if True, inteprets y_pred as CORN logits; otherwise (default)
+            as CORAL logits.
+          threshold: which threshold should be used to determine the label from
+            the cumulative probabilities. Defaults to 0.5.
+          name: name of metric.
+          **kwargs: keyword arguments passed to parent Metric().
+        """
+        super().__init__(name=name, **kwargs)
+        self._corn_logits = corn_logits
+        self._threshold = threshold
         self.maes = self.add_weight(name="maes", initializer="zeros")
         self.count = self.add_weight(name="count", initializer="zeros")
 
@@ -24,25 +43,24 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
         if sample_weight:
             raise NotImplementedError
 
-        # Predict the label as in Cao et al. - using cumulative probabilities
-        # cum_probs = tf.map_fn(tf.math.sigmoid, y_pred)
+        # Predict the label as in Cao et al. - using cumulative probabilities.
+        if self._corn_logits:
+            cumprobs = activations.corn_cumprobs(y_pred)
+        else:
+            cumprobs = activations.coral_cumprobs(y_pred)
 
-        # Calculate the labels using the style of Cao et al.
-        # above_thresh = tf.map_fn(lambda x: tf.cast(x > 0.5, tf.float32), cum_probs)
-
-        # Skip sigmoid and just operate on logit scale, since logit > 0 is
-        # equivalent to prob > 0.5.
-        above_thresh = tf.cast(y_pred > 0.0, tf.float32)
-
-        # Sum across columns to estimate how many cumulative thresholds are passed.
-        labels_v2 = tf.reduce_sum(above_thresh, axis=1)
-
-        y_true = tf.cast(y_true, y_pred.dtype)
+        # Threshold cumulative probabilities at predefined cutoff (user set).
+        label_pred = tf.cast(
+            activations.cumprobs_to_label(cumprobs, threshold=self._threshold),
+            dtype=tf.float32,
+        )
+        y_true = tf.cast(y_true, label_pred.dtype)
 
         # remove all dimensions of size 1 (e.g., from [[1], [2]], to [1, 2])
         y_true = tf.squeeze(y_true)
+        label_pred = tf.squeeze(label_pred)
 
-        self.maes.assign_add(tf.reduce_mean(tf.abs(y_true - labels_v2)))
+        self.maes.assign_add(tf.reduce_mean(tf.abs(y_true - label_pred)))
         self.count.assign_add(tf.constant(1.0))
 
     def result(self):
@@ -54,7 +72,7 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
 
     def get_config(self):
         """Returns the serializable config of the metric."""
-        config = {}
+        config = {"threshold": self._threshold, "corn_logits": self._corn_logits}
         base_config = super().get_config()
         return {**base_config, **config}
 
