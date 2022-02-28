@@ -161,30 +161,35 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
         """
         y_pred = tf.convert_to_tensor(y_pred, dtype=tf.float32)
         y_true = tf.cast(y_true, y_pred.dtype)
+        y_true = tf.squeeze(y_true)
         if self.num_classes is None:
             self.num_classes = int(y_pred.get_shape().as_list()[1]) + 1
 
         sets = []
         for i in range(self.num_classes - 1):
-            label_mask = y_true > i - 1
-            label_tensor = tf.cast(y_true[label_mask] > i, dtype=tf.float32)
-            sets.append((label_mask, label_tensor))
+            set_mask = y_true > i - 1
+            label_gt_i = y_true > i
+            sets.append((set_mask, label_gt_i))
 
-        num_examples = 0
+        n_examples = []
         losses = 0.0
         for task_index, s in enumerate(sets):
-            train_mask = s[0]
-            train_labels = s[1]
-            if len(train_labels) < 1:
+            set_mask, label_gt_i = s
+            n_examples_task = tf.reduce_sum(tf.cast(set_mask, dtype=tf.float32))
+            n_examples.append(n_examples_task)
+            if tf.keras.backend.equal(n_examples_task, 0.0):
                 continue
 
-            num_examples += len(train_labels)
-            pred = y_pred[train_mask][:, task_index]
-
-            loss = -tf.reduce_sum(
-                tf.math.log_sigmoid(pred) * train_labels
-                + (tf.math.log_sigmoid(pred) - pred) * (1.0 - train_labels)
+            pred_task = tf.gather(y_pred, task_index, axis=1)
+            losses_task = tf.where(
+                set_mask,
+                tf.where(
+                    label_gt_i,
+                    tf.math.log_sigmoid(pred_task),  # if label > i
+                    tf.math.log_sigmoid(pred_task) - pred_task,  # if label <= i
+                ),
+                0.0,  # don't add to loss if label is <= i - 1
             )
-            losses += loss
+            losses += -tf.reduce_sum(losses_task)
 
         return losses / self.num_classes
