@@ -37,11 +37,8 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
         Args:
           y_true: Labels (int).
           y_pred: Cumulative logits from CoralOrdinal layer.
-          sample_weight (optional): Not implemented.
+          sample_weight (optional): sample weights to weight absolute error.
         """
-
-        if sample_weight:
-            raise NotImplementedError
 
         # Predict the label as in Cao et al. - using cumulative probabilities.
         if self._corn_logits:
@@ -59,8 +56,14 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
         # remove all dimensions of size 1 (e.g., from [[1], [2]], to [1, 2])
         y_true = tf.squeeze(y_true)
         label_pred = tf.squeeze(label_pred)
+        label_abs_err = tf.abs(y_true - label_pred)
 
-        self.maes.assign_add(tf.reduce_mean(tf.abs(y_true - label_pred)))
+        if sample_weight is not None:
+            sample_weight = tf.cast(sample_weight, y_true.dtype)
+            sample_weight = tf.broadcast_to(sample_weight, label_abs_err.shape)
+            label_abs_err = tf.multiply(label_abs_err, sample_weight)
+
+        self.maes.assign_add(tf.reduce_mean(label_abs_err))
         self.count.assign_add(tf.constant(1.0))
 
     def result(self):

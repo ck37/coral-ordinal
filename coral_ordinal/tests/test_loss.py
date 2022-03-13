@@ -91,3 +91,15 @@ def test_sample_weights_loss():
     ).numpy()
 
     np.testing.assert_allclose(loss_val * sample_weights, loss_val_weighted)
+
+
+def test_sample_weight_in_fit():
+    X, y, _ = _create_test_data()
+    w = np.zeros_like(y)
+    model = tf.keras.models.Sequential()
+    model.add(tf.keras.layers.Dense(5, input_dim=X.shape[1]))
+    model.add(layer.CornOrdinal(num_classes=4))
+    model.compile(loss=loss.OrdinalCrossEntropy())
+
+    history = model.fit(X, y, sample_weight=w, epochs=2)
+    np.testing.assert_allclose(np.array(history.history["loss"]), np.array([0.0, 0.0]))
