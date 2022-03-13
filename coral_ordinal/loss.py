@@ -1,5 +1,6 @@
 from typing import Optional
 
+import warnings
 import functools
 import tensorflow as tf
 import numpy as np
@@ -13,7 +14,7 @@ def _label_to_levels(labels: tf.Tensor, num_classes: int) -> tf.Tensor:
     return tf.sequence_mask(labels, maxlen=num_classes - 1, dtype=tf.float32)
 
 
-def _ordinal_loss_no_reduction(
+def _coral_ordinal_loss_no_reduction(
     logits: tf.Tensor, levels: tf.Tensor, importance: tf.Tensor
 ) -> tf.Tensor:
     """Compute ordinal loss without reduction."""
@@ -28,6 +29,23 @@ def _ordinal_loss_no_reduction(
     return losses
 
 
+def _reduce_losses(
+    losses: tf.Tensor, reduction: tf.keras.losses.Reduction
+) -> tf.Tensor:
+    """Reduces losses to specified reduction."""
+    if reduction == tf.keras.losses.Reduction.NONE:
+        return losses
+    elif reduction in [
+        tf.keras.losses.Reduction.AUTO,
+        tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
+    ]:
+        return tf.reduce_mean(losses)
+    elif reduction == tf.keras.losses.Reduction.SUM:
+        return tf.reduce_sum(losses)
+    else:
+        raise Exception(f"{reduction} is not a valid reduction.")
+
+
 # The outer function is a constructor to create a loss function using a certain number of classes.
 @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
@@ -36,7 +54,7 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
     def __init__(
         self,
         num_classes: Optional[int] = None,
-        importance_weights=None,
+        importance_weights: Optional[np.ndarray] = None,
         from_type: str = "ordinal_logits",
         name: str = "ordinal_crossentropy",
         **kwargs,
@@ -46,11 +64,12 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         Args:
           num_classes: number of ranks (aka labels or values) in the ordinal variable.
             This is optional; can be inferred from size of y_pred at runtime.
-          importance_weights: (Optional) importance weights for each binary classification task.
+          importance_weights: class weights for each binary classification task.
           from_type: one of "ordinal_logits" (default), "logits", or "probs".
             Ordinal logits are the output of a CoralOrdinal() layer with no activation.
             (Not yet implemented) Logits are the output of a dense layer with no activation.
-            (Not yet implemented) Probs are the probability outputs of a softmax or ordinal_softmax layer.
+            (Not yet implemented) Probs are the probability outputs of a softmax or ordinal_softmax
+            layer.
           name: name of layer
           **kwargs: keyword arguments passed to Loss().
         """
@@ -61,7 +80,12 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         self.from_type = from_type
 
     # Following https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss
-    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor):
+    def call(
+        self,
+        y_true: tf.Tensor,
+        y_pred: tf.Tensor,
+        sample_weight: Optional[tf.Tensor] = None,
+    ):
 
         # Ensure that y_true is the same type as y_pred (presumably a float).
         y_pred = tf.convert_to_tensor(y_pred)
@@ -78,7 +102,9 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
             importance_weights = tf.cast(self.importance_weights, dtype=tf.float32)
 
         if self.from_type == "ordinal_logits":
-            loss = _ordinal_loss_no_reduction(y_pred, tf_levels, importance_weights)
+            losses = _coral_ordinal_loss_no_reduction(
+                y_pred, tf_levels, importance_weights
+            )
         elif self.from_type == "probs":
             raise NotImplementedError("not yet implemented")
         elif self.from_type == "logits":
@@ -89,17 +115,13 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
                 + self.from_type
                 + " in OrdinalCrossEntropy()"
             )
-        if self.reduction == tf.keras.losses.Reduction.NONE:
-            return loss
-        elif self.reduction in [
-            tf.keras.losses.Reduction.AUTO,
-            tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
-        ]:
-            return tf.reduce_mean(loss)
-        elif self.reduction == tf.keras.losses.Reduction.SUM:
-            return tf.reduce_sum(loss)
-        else:
-            raise Exception(f"{self.reduction} is not a valid reduction.")
+
+        if sample_weight is not None:
+            sample_weight = tf.cast(sample_weight, losses.dtype)
+            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
+            losses = tf.multiply(losses, sample_weight)
+
+        return _reduce_losses(losses, self.reduction)
 
     def get_config(self):
         config = {
@@ -117,24 +139,24 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
 
     def __init__(
         self,
-        reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
         **kwargs,
     ):
         """Initializes class."""
-        if not reduction in [
-            tf.keras.losses.Reduction.AUTO,
-            tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
-        ]:
-            raise NotImplementedError(f"reduction={reduction} is not implemented.")
-        super().__init__(reduction=reduction, **kwargs)
+        super().__init__(**kwargs)
         self.num_classes = None
 
-    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor):
+    def __call__(
+        self,
+        y_true: tf.Tensor,
+        y_pred: tf.Tensor,
+        sample_weight: Optional[tf.Tensor] = None,
+    ):
         """Computes the CORN loss described in https://arxiv.org/abs/2111.08851
 
         Args:
           y_true: true labels (0..N-1)
           y_pred: predicted logits (from CornLayer())
+          sample_weights: optional; provide sample weights for each sample.
 
         Returns:
           loss: tf.Tensor, that contains the loss value.
@@ -152,7 +174,7 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
             sets.append((set_mask, label_gt_i))
 
         n_examples = []
-        losses = 0.0
+        losses = tf.zeros_like(y_true)
         for task_index, s in enumerate(sets):
             set_mask, label_gt_i = s
             n_examples_task = tf.reduce_sum(tf.cast(set_mask, dtype=tf.float32))
@@ -170,6 +192,12 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
                 ),
                 0.0,  # don't add to loss if label is <= i - 1
             )
-            losses += -tf.reduce_sum(losses_task)
+            losses += -losses_task
+        losses /= self.num_classes
 
-        return losses / self.num_classes
+        if sample_weight is not None:
+            sample_weight = tf.cast(sample_weight, losses.dtype)
+            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
+            losses = tf.multiply(losses, sample_weight)
+
+        return _reduce_losses(losses, self.reduction)
