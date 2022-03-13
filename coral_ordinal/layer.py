@@ -1,5 +1,7 @@
+from typing import Optional
+import warnings
 import tensorflow as tf
-from tensorflow.python.keras import activations
+import tensorflow.keras.regularizers
 
 
 @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
@@ -8,7 +10,14 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
     # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
     # in case the user doesn't know the input dimensions when defining the model.
-    def __init__(self, num_classes: int, activation=None, **kwargs):
+    def __init__(
+        self,
+        num_classes: int,
+        activation: Optional[str] = None,
+        kernel_regularizer: Optional[tf.keras.regularizers.Regularizer] = None,
+        bias_regularizer: Optional[tf.keras.regularizers.Regularizer] = None,
+        **kwargs,
+    ):
         """Ordinal output layer, which produces ordinal logits by default.
 
         Args:
@@ -16,6 +25,9 @@ class CoralOrdinal(tf.keras.layers.Layer):
           activation: (Optional) Activation function to use. The default of None produces
             ordinal logits, but passing "ordinal_softmax" will cause the layer to output
             a probability prediction for each label.
+          kernel_regularizer: regularizer for kernel of Coral Dense layer.
+          bias_regularizer: regularizer for bias of Coral Dense layer.
+          **kwargs: keyword arguments passed to Layer().
         """
 
         # Via Dense Layer code:
@@ -26,7 +38,9 @@ class CoralOrdinal(tf.keras.layers.Layer):
         # Pass any additional keyword arguments to Layer() (i.e. name, dtype)
         super(CoralOrdinal, self).__init__(**kwargs)
         self.num_classes = num_classes
-        self.activation = activations.get(activation)
+        self.activation = tf.keras.activations.get(activation)
+        self.kernel_regularizer = tf.keras.regularizers.get(kernel_regularizer)
+        self.bias_regularizer = tf.keras.regularizers.get(bias_regularizer)
 
     # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
     def build(self, input_shape):
@@ -42,6 +56,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
             # Need a unique name if there are multiple coral_ordinal layers.
             name=self.name + "_latent",
             initializer="glorot_uniform",
+            regularizer=self.kernel_regularizer,
             # Not sure if this is necessary:
             dtype=tf.float32,
             trainable=True,
@@ -52,6 +67,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
             shape=(self.num_classes - 1,),
             # Need a unique name if there are multiple coral_ordinal layers.
             name=self.name + "_bias",
+            regularizer=self.bias_regularizer,
             initializer="zeros",
             # Not sure if this is necessary:
             dtype=tf.float32,
@@ -72,11 +88,17 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
         return outputs
 
-    # This allows for serialization supposedly.
+    # This allows for serialization.
     # https://www.tensorflow.org/guide/keras/custom_layers_and_models#you_can_optionally_enable_serialization_on_your_layers
     def get_config(self):
         config = super(CoralOrdinal, self).get_config()
-        config.update({"num_classes": self.num_classes})
+        config.update(
+            {
+                "num_classes": self.num_classes,
+                "kernel_regularizer": self.kernel_regularizer,
+                "bias_regularizer": self.bias_regularizer,
+            }
+        )
         return config
 
 
@@ -95,6 +117,10 @@ class CornOrdinal(tf.keras.layers.Dense):
             ordinal logits, but passing "ordinal_softmax" will cause the layer to output
             a probability prediction for each label.
         """
+        if "units" in kwargs:
+            warnings.warn("Use 'num_classes' instead of 'units'. Dropping ...")
+            kwargs.pop("units")
+
         super(CornOrdinal, self).__init__(
             units=num_classes - 1, activation=activation, **kwargs
         )
