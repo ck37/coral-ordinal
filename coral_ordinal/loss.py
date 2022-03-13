@@ -47,7 +47,7 @@ def _reduce_losses(
 
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
-# @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class OrdinalCrossEntropy(tf.keras.losses.Loss):
     """Computes ordinal cross entropy based on ordinal predictions and outcomes."""
 
@@ -131,7 +131,7 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         return {**base_config, **config}
 
 
-# @tf.keras.utils.register_keras_serializable(package="coral_ordinal")
+@tf.keras.utils.register_keras_serializable(package="coral_ordinal")
 class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
     """Implements CORN ordinal loss function for logits."""
 
