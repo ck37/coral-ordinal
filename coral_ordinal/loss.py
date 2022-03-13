@@ -14,7 +14,7 @@ def _label_to_levels(labels: tf.Tensor, num_classes: int) -> tf.Tensor:
     return tf.sequence_mask(labels, maxlen=num_classes - 1, dtype=tf.float32)
 
 
-def _ordinal_loss_no_reduction(
+def _coral_ordinal_loss_no_reduction(
     logits: tf.Tensor, levels: tf.Tensor, importance: tf.Tensor
 ) -> tf.Tensor:
     """Compute ordinal loss without reduction."""
@@ -27,6 +27,23 @@ def _ordinal_loss_no_reduction(
         axis=1,
     )
     return losses
+
+
+def _reduce_losses(
+    losses: tf.Tensor, reduction: tf.keras.losses.Reduction
+) -> tf.Tensor:
+    """Reduces losses to specified reduction."""
+    if reduction == tf.keras.losses.Reduction.NONE:
+        return losses
+    elif reduction in [
+        tf.keras.losses.Reduction.AUTO,
+        tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE,
+    ]:
+        return tf.reduce_mean(losses)
+    elif reduction == tf.keras.losses.Reduction.SUM:
+        return tf.reduce_sum(losses)
+    else:
+        raise Exception(f"{reduction} is not a valid reduction.")
 
 
 # The outer function is a constructor to create a loss function using a certain number of classes.
@@ -85,7 +102,9 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
             importance_weights = tf.cast(self.importance_weights, dtype=tf.float32)
 
         if self.from_type == "ordinal_logits":
-            loss = _ordinal_loss_no_reduction(y_pred, tf_levels, importance_weights)
+            losses = _coral_ordinal_loss_no_reduction(
+                y_pred, tf_levels, importance_weights
+            )
         elif self.from_type == "probs":
             raise NotImplementedError("not yet implemented")
         elif self.from_type == "logits":
@@ -98,9 +117,9 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
             )
 
         if sample_weight is not None:
-            loss *= sample_weight
+            losses *= sample_weight
 
-        return loss
+        return _reduce_losses(losses, self.reduction)
 
     def get_config(self):
         config = {
@@ -176,5 +195,4 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
 
         if sample_weight is not None:
             losses *= sample_weight
-
-        return losses
+        return _reduce_losses(losses, self.reduction)

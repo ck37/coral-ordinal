@@ -134,4 +134,5 @@ class CornOrdinal(tf.keras.layers.Dense):
     def get_config(self):
         config = super(CornOrdinal, self).get_config()
         config.update({"num_classes": self.num_classes, "activation": self.activation})
+        config.pop("units")
         return config
