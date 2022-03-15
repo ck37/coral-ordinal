@@ -76,7 +76,12 @@ def test_corn_loss_reduction(reduction, expected_len):
         assert loss_val.shape[0] == expected_len
 
 
-def test_sample_weights_loss():
+@pytest.mark.parametrize(
+    "y_lt",
+    [(1), (4), (5)],
+)
+def test_sample_weights_loss(y_lt):
+    # Tests that loss calculation also works when not all labels are present.
     X, y, sample_weights = _create_test_data()
     corn_loss = loss.CornOrdinalCrossEntropy(reduction="none")
     num_classes = len(np.unique(y))
@@ -85,12 +90,15 @@ def test_sample_weights_loss():
     corn_net = layer.CornOrdinal(num_classes=num_classes, input_dim=X.shape[1])
     logits = corn_net(X)
 
-    loss_val = corn_loss(y_true=y, y_pred=logits).numpy()
+    y_lt_mask = y < y_lt
+    loss_val = corn_loss(y_true=y[y_lt_mask], y_pred=logits[y_lt_mask]).numpy()
     loss_val_weighted = corn_loss(
-        y_true=y, y_pred=logits, sample_weight=sample_weights
+        y_true=y[y_lt_mask],
+        y_pred=logits[y_lt_mask],
+        sample_weight=sample_weights[y_lt_mask],
     ).numpy()
 
-    np.testing.assert_allclose(loss_val * sample_weights, loss_val_weighted)
+    np.testing.assert_allclose(loss_val * sample_weights[y_lt_mask], loss_val_weighted)
 
 
 def test_sample_weight_in_fit():
@@ -102,4 +110,17 @@ def test_sample_weight_in_fit():
     model.compile(loss=loss.OrdinalCrossEntropy())
 
     history = model.fit(X, y, sample_weight=w, epochs=2)
+    np.testing.assert_allclose(np.array(history.history["loss"]), np.array([0.0, 0.0]))
+
+
+def test_class_weight_in_fit():
+    X, y, _ = _create_test_data()
+    model = tf.keras.models.Sequential()
+    model.add(tf.keras.layers.Dense(5, input_dim=X.shape[1]))
+    model.add(layer.CornOrdinal(num_classes=4))
+    model.compile(loss=loss.OrdinalCrossEntropy())
+
+    history = model.fit(
+        X, y, epochs=2, class_weight={0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
+    )
     np.testing.assert_allclose(np.array(history.history["loss"]), np.array([0.0, 0.0]))
