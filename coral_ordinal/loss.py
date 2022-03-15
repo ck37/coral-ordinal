@@ -120,7 +120,6 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
 
         if sample_weight is not None:
             sample_weight = tf.cast(sample_weight, losses.dtype)
-            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
             losses = tf.multiply(losses, sample_weight)
 
         return _reduce_losses(losses, self.reduction)
@@ -197,7 +196,6 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
 
         if sample_weight is not None:
             sample_weight = tf.cast(sample_weight, losses.dtype)
-            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
             losses = tf.multiply(losses, sample_weight)
 
         return _reduce_losses(losses, self.reduction)
