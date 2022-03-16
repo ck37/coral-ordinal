@@ -18,6 +18,8 @@ def _coral_ordinal_loss_no_reduction(
     logits: tf.Tensor, levels: tf.Tensor, importance: tf.Tensor
 ) -> tf.Tensor:
     """Compute ordinal loss without reduction."""
+    levels = tf.cast(levels, dtype=logits.dtype)
+    importance = tf.cast(importance, dtype=logits.dtype)
     losses = -tf.reduce_sum(
         (
             tf.math.log_sigmoid(logits) * levels
@@ -118,7 +120,6 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
 
         if sample_weight is not None:
             sample_weight = tf.cast(sample_weight, losses.dtype)
-            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
             losses = tf.multiply(losses, sample_weight)
 
         return _reduce_losses(losses, self.reduction)
@@ -173,14 +174,9 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
             label_gt_i = y_true > i
             sets.append((set_mask, label_gt_i))
 
-        n_examples = []
         losses = tf.zeros_like(y_true)
         for task_index, s in enumerate(sets):
             set_mask, label_gt_i = s
-            n_examples_task = tf.reduce_sum(tf.cast(set_mask, dtype=tf.float32))
-            n_examples.append(n_examples_task)
-            if tf.keras.backend.equal(n_examples_task, 0.0):
-                continue
 
             pred_task = tf.gather(y_pred, task_index, axis=1)
             losses_task = tf.where(
@@ -197,7 +193,6 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
 
         if sample_weight is not None:
             sample_weight = tf.cast(sample_weight, losses.dtype)
-            sample_weight = tf.broadcast_to(sample_weight, losses.shape)
             losses = tf.multiply(losses, sample_weight)
 
         return _reduce_losses(losses, self.reduction)
