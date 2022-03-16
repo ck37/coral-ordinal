@@ -106,7 +106,7 @@ def test_sample_weight_in_fit():
     w = np.zeros_like(y)
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Dense(5, input_dim=X.shape[1]))
-    model.add(layer.CornOrdinal(num_classes=4))
+    model.add(layer.CornOrdinal(num_classes=len(np.unique(y))))
     model.compile(loss=loss.CornOrdinalCrossEntropy())
 
     history = model.fit(X, y, sample_weight=w, epochs=2)
@@ -117,7 +117,7 @@ def test_class_weight_in_fit():
     X, y, _ = _create_test_data()
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Dense(5, input_dim=X.shape[1]))
-    model.add(layer.CornOrdinal(num_classes=4))
+    model.add(layer.CornOrdinal(num_classes=len(np.unique(y))))
     model.compile(loss=loss.CornOrdinalCrossEntropy())
 
     history = model.fit(

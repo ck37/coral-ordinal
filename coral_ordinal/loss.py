@@ -174,12 +174,9 @@ class CornOrdinalCrossEntropy(tf.keras.losses.Loss):
             label_gt_i = y_true > i
             sets.append((set_mask, label_gt_i))
 
-        n_examples = []
         losses = tf.zeros_like(y_true)
         for task_index, s in enumerate(sets):
             set_mask, label_gt_i = s
-            n_examples_task = tf.reduce_sum(tf.cast(set_mask, dtype=tf.float32))
-            n_examples.append(n_examples_task)
 
             pred_task = tf.gather(y_pred, task_index, axis=1)
             losses_task = tf.where(
