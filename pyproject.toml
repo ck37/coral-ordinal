@@ -19,6 +19,8 @@ numpy = ">=1.23.2,<3.0.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
 ruff = "^0.4.4"
+scikit-learn = "^1.7.1"
+pandas = "^2.3.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
