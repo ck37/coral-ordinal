@@ -13,7 +13,7 @@ packages = [{ include = "coral_ordinal" }]  # adjust if your module path is diff
 
 [tool.poetry.dependencies]
 python = ">=3.12"
-tensorflow = ">=2.2"
+tensorflow = ">=2.3"
 numpy = ">=1.23.2,<3.0.0"
 
 [tool.poetry.group.dev.dependencies]
