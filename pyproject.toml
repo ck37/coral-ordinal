@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "coral-ordinal"
+version = "0.2.0"
+description = "Tensorflow Keras implementation of CORAL ordinal regression output layer, loss, activation, and metrics"
+authors = [
+  "Chris Kennedy <chrisken@gmail.com>",
+  "Stephen Matthews",
+  "Georg M. Goerg"
+]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "coral_ordinal" }]  # adjust if your module path is different
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+tensorflow = ">=2.2"
+numpy = ">=1.23.2,<3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+ruff = "^0.4.4"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

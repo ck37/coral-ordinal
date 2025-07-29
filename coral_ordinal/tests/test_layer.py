@@ -1,7 +1,9 @@
+import os
 import tempfile
-import tensorflow as tf
+
 import numpy as np
 import pytest
+import tensorflow as tf
 
 from coral_ordinal import layer
 
@@ -38,9 +40,11 @@ def test_serializing_layers(constructor):
 
     preds = model.predict(X)
     with tempfile.TemporaryDirectory() as d:
-        tf.keras.models.save_model(model, d)
+        filepath = os.path.join(d, "model.keras")
+        model.save(filepath)
 
-        model_tmp = tf.keras.models.load_model(d)
+        model_tmp = tf.keras.models.load_model(filepath)
         assert isinstance(model_tmp.layers[-1], constructor)
+
     preds_tmp = model_tmp.predict(X)
     np.testing.assert_allclose(preds, preds_tmp)

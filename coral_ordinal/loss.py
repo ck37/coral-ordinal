@@ -1,9 +1,9 @@
+"""Module to compute CORN and CORAL losses."""
+
 from typing import Optional
 
-import warnings
-import functools
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 
 
 def _label_to_levels(labels: tf.Tensor, num_classes: int) -> tf.Tensor:
@@ -88,7 +88,6 @@ class OrdinalCrossEntropy(tf.keras.losses.Loss):
         y_pred: tf.Tensor,
         sample_weight: Optional[tf.Tensor] = None,
     ):
-
         # Ensure that y_true is the same type as y_pred (presumably a float).
         y_pred = tf.convert_to_tensor(y_pred)
         y_true = tf.cast(y_true, y_pred.dtype)
