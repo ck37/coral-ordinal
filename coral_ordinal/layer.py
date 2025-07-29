@@ -1,5 +1,8 @@
-from typing import Optional
+"""Module for implementing CORAL and CORN layers."""
+
 import warnings
+from typing import Optional
+
 import tensorflow as tf
 import tensorflow.keras.regularizers
 
@@ -44,7 +47,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
     # Following https://www.tensorflow.org/guide/keras/custom_layers_and_models#best_practice_deferring_weight_creation_until_the_shape_of_the_inputs_is_known
     def build(self, input_shape):
-
+        """Builds layer weights based on the input shape."""
         # Single fully-connected neuron - this is the latent variable.
         num_units = 1
 
@@ -76,6 +79,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
 
     # This defines the forward pass.
     def call(self, inputs):
+        """Executes the forward pass of the layer."""
         kernelized_inputs = tf.matmul(inputs, self.kernel)
 
         logits = kernelized_inputs + self.bias
@@ -91,6 +95,7 @@ class CoralOrdinal(tf.keras.layers.Layer):
     # This allows for serialization.
     # https://www.tensorflow.org/guide/keras/custom_layers_and_models#you_can_optionally_enable_serialization_on_your_layers
     def get_config(self):
+        """Gets the config of the layer."""
         config = super(CoralOrdinal, self).get_config()
         config.update(
             {
@@ -108,7 +113,7 @@ class CornOrdinal(tf.keras.layers.Dense):
 
     # We skip input_dim/input_shape here and put in the build() method as recommended in the tutorial,
     # in case the user doesn't know the input dimensions when defining the model.
-    def __init__(self, num_classes: int, activation=None, **kwargs):
+    def __init__(self, num_classes: int, **kwargs):
         """Ordinal output layer, which produces ordinal logits by default.
 
         Args:
@@ -121,18 +126,17 @@ class CornOrdinal(tf.keras.layers.Dense):
             warnings.warn("Use 'num_classes' instead of 'units'. Dropping ...")
             kwargs.pop("units")
 
-        super(CornOrdinal, self).__init__(
-            units=num_classes - 1, activation=activation, **kwargs
-        )
-        if activation is not None:
-            raise NotImplementedError(
-                f"CornOrdinal() must return logits. Got {activation}."
+        if "activation" in kwargs:
+            warnings.warn(
+                "CornOrdinal() must return base logits. Dropping 'activation' argument ..."
             )
+            kwargs.pop("activation")
+
+        super(CornOrdinal, self).__init__(units=num_classes - 1, **kwargs)
         self.num_classes = num_classes
-        self.activation = activation
 
     def get_config(self):
         config = super(CornOrdinal, self).get_config()
-        config.update({"num_classes": self.num_classes, "activation": self.activation})
+        config.update({"num_classes": self.num_classes})
         config.pop("units")
         return config

@@ -1,5 +1,6 @@
+"""Module for computing metrics."""
+
 import tensorflow as tf
-from tensorflow.keras import backend as K
 
 from . import activations
 
@@ -13,12 +14,12 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
         corn_logits: bool = False,
         threshold: float = 0.5,
         name="mean_absolute_error_labels",
-        **kwargs
+        **kwargs,
     ):
         """Creates a `MeanAbsoluteErrorLabels` instance.
 
         Args:
-          corn_logits: if True, inteprets y_pred as CORN logits; otherwise (default)
+          corn_logits: if True, interprets y_pred as CORN logits; otherwise (default)
             as CORAL logits.
           threshold: which threshold should be used to determine the label from
             the cumulative probabilities. Defaults to 0.5.
@@ -71,7 +72,8 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
 
     def reset_state(self):
         """Resets all of the metric state variables at the start of each epoch."""
-        K.batch_set_value([(v, 0) for v in self.variables])
+        for v in self.variables:
+            v.assign(0)
 
     def get_config(self):
         """Returns the serializable config of the metric."""
@@ -85,7 +87,7 @@ class MeanAbsoluteErrorLabels(tf.keras.metrics.Metric):
 def MeanAbsoluteErrorLabels_v2(y_true, y_pred):
   # There will be num_classes - 1 cumulative logits as columns of the tensor.
   num_classes = y_pred.shape[1] + 1
-  
+
   probs = logits_to_probs(y_pred, num_classes)
 
 # RootMeanSquaredErrorLabels

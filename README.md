@@ -4,7 +4,7 @@
 [![PyPi downloads](https://img.shields.io/pypi/dm/coral-ordinal?style=flat)](https://pypi.org/project/coral-ordinal/)
 
 
-Tensorflow Keras implementation of ordinal regression (aka *ordinal classification*) using 
+Tensorflow Keras implementation of ordinal regression (aka *ordinal classification*) using
 
 * **CORAL**: consistent rank logits (CORAL) by Cao, Mirjalili, & Raschka (2019)
 
@@ -53,6 +53,7 @@ This is a quick example to show a basic model implementation. With actual data o
 ```python
 import coral_ordinal as coral
 NUM_CLASSES = 5
+
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation = "relu"))
 model.add(coral.CoralOrdinal(num_classes = NUM_CLASSES)) # Ordinal variable has 5 labels, 0 through 4.
@@ -67,7 +68,7 @@ Note that the minimum value of the ordinal variable needs to be 0. If your label
 
 ## References
 
-Cao, W., Mirjalili, V., & Raschka, S. (2019). [Rank-consistent ordinal regression for neural networks](https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6. 
+Cao, W., Mirjalili, V., & Raschka, S. (2019). [Rank-consistent ordinal regression for neural networks](https://arxiv.org/abs/1901.07884). arXiv preprint arXiv:1901.07884, 6.
 
 Shi X., Cao W., & Raschka S. (2021). [Deep Neural Networks for Rank-Consistent Ordinal Regression Based On Conditional Probabilities](https://arxiv.org/abs/2111.08851). arXiv preprint arXiv:211108851
 
